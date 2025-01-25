@@ -1,5 +1,11 @@
-sh:
-	docker compose exec laravel sh
+up:
+	docker compose up -d
 
-build:
-	docker compose build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)
+sh:
+	docker compose exec laravel bash
+
+fix:
+	./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php
+
+analyze:
+	./vendor/bin/phpstan analyse --memory-limit=2G

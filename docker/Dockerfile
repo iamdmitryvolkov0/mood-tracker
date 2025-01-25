@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
+    bash-completion \
     libpq-dev
 
 # Установка PHP расширений
@@ -32,6 +33,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Меняем владельца директории
 RUN chown -R www:www /var/www
+
+RUN chsh -s /bin/bash www
 
 # Переключаемся на пользователя www
 USER www
