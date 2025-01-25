@@ -1,0 +1,55 @@
+services:
+    laravel:
+        build:
+            context: .
+            dockerfile: ./docker/Dockerfile
+            args:
+                USER_ID: ${USER_ID:-1000}
+                GROUP_ID: ${GROUP_ID:-1000}
+        container_name: laravel_app
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - type: bind
+              source: .
+              target: /var/www
+              consistency: cached
+        networks:
+            - laravel
+        user: "${USER_ID:-1000}:${GROUP_ID:-1000}"
+
+
+    nginx:
+        image: nginx:alpine
+        container_name: nginx
+        restart: unless-stopped
+        ports:
+            - "8000:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/conf.d:/etc/nginx/conf.d
+        networks:
+            - laravel
+
+    db:
+        image: postgres:latest
+        container_name: pgsql
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: laravel
+            POSTGRES_USER: laravel
+            POSTGRES_PASSWORD: secret
+        volumes:
+            - data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        networks:
+            - laravel
+
+networks:
+    laravel:
+        driver: bridge
+
+volumes:
+    data:
+        driver: local
